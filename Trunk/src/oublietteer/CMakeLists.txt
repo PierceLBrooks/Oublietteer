@@ -13,6 +13,10 @@ include_directories(${PROJECT_SOURCE_DIR}/include)
 set(PROJECT_FILES
 	${SRC}/Oubliette.cpp
 	${INC}/Oubliette.hpp
+	${SRC}/Room.cpp
+	${INC}/Room.hpp
+	${SRC}/Floor.cpp
+	${INC}/Floor.hpp
 )
 
 set(EXAMPLE_FILES
