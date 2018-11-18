@@ -29,14 +29,20 @@ int main(int argc, char** argv)
     bool automatic = true;
     bool manual = false;
     bool change = false;
+    bool view = false;
+    float movement = 0.01f;
+    float scale = 2.5f;
     Dungeon* dungeon = nullptr;
     sf::Sprite* sprite = nullptr;
     sf::Texture* texture = nullptr;
     sf::Image* image = nullptr;
     sf::RenderWindow* window = new sf::RenderWindow();
     auto resolutions = sf::VideoMode::getFullscreenModes();
+    sf::Vector2f center = sf::Vector2f();
     window->create(resolutions[resolutions.size()/2], "Oublietteer Example");
     window->setFramerateLimit(60);
+    center += sf::Vector2f(window->getSize())*0.5f;
+    window->setView(sf::View(center, sf::Vector2f(window->getSize())));
     while (window->isOpen())
     {
         sf::Event event;
@@ -181,9 +187,35 @@ int main(int argc, char** argv)
                 }
             }
         }
-        window->clear(sf::Color::White);
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+        {
+            center.x -= static_cast<float>(window->getSize().x)*movement;
+            view = true;
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+        {
+            center.y -= static_cast<float>(window->getSize().y)*movement;
+            view = true;
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+        {
+            center.x += static_cast<float>(window->getSize().x)*movement;
+            view = true;
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+        {
+            center.y += static_cast<float>(window->getSize().y)*movement;
+            view = true;
+        }
+        if (view)
+        {
+            window->setView(sf::View(center, sf::Vector2f(window->getSize())));
+            view = false;
+        }
+        window->clear(sf::Color(128, 128, 128));
         if (sprite != nullptr)
         {
+            sprite->setScale(scale, scale);
             window->draw(*sprite);
         }
         window->display();
