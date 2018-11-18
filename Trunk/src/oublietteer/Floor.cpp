@@ -56,7 +56,8 @@ bool oublietteer::Floor::addRoom(bool manual)
     {
         return false;
     }
-    Room* room = new Room(this, rooms.size(), getRoomSize(), 0.0f);
+    float pi = 22.0f/7.0f;
+    Room* room = new Room(this, rooms.size(), getRoomSize(), getRandom()->getFloat(-pi, pi));
     rooms.push_back(room);
     isManual = true;
     if (!manual)
@@ -84,12 +85,36 @@ oublietteer::Room* oublietteer::Floor::getRoom(unsigned int index) const
 
 bool oublietteer::Floor::settleRoom(Room* room)
 {
-
+    if (!isManual)
+    {
+        return false;
+    }
+    sf::Vector2i position = room->getPosition();
+    if (room->settle())
+    {
+        for (unsigned int i = 0; i != rooms.size(); ++i)
+        {
+            if (room->getIndex() != i)
+            {
+                if (room->getBounds().intersects(rooms[i]->getBounds()))
+                {
+                    room->setPosition(position);
+                    isManual = false;
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    isManual = false;
+    return false;
 }
 
 sf::Vector2u oublietteer::Floor::getRoomSize() const
 {
-    return sf::Vector2u(sf::Vector2i(4, 4));
+    int width = static_cast<int>(sqrtf(static_cast<float>(size.x)));
+    int height = static_cast<int>(sqrtf(static_cast<float>(size.y)));
+    return sf::Vector2u(sf::Vector2i(getRandom()->getInt(width/2, width), getRandom()->getInt(height/2, height)));
 }
 
 sf::Color oublietteer::Floor::getRoomColor() const
@@ -121,6 +146,20 @@ sf::Image* oublietteer::Floor::getImage() const
                 }
             }
         }
+        else
+        {
+            std::cout << i << std::endl;
+        }
     }
     return image;
+}
+
+bool oublietteer::Floor::getIsManual() const
+{
+    return isManual;
+}
+
+oublietteer::Random* oublietteer::Floor::getRandom() const
+{
+    return owner->getRandom();
 }

@@ -17,6 +17,8 @@ set(PROJECT_FILES
 	${INC}/Room.hpp
 	${SRC}/Floor.cpp
 	${INC}/Floor.hpp
+	${SRC}/Random.cpp
+	${INC}/Random.hpp
 )
 
 set(EXAMPLE_FILES

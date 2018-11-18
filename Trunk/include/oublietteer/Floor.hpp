@@ -8,6 +8,7 @@
 #include <SFML/Graphics/Image.hpp>
 #include <SFML/Graphics/Rect.hpp>
 #include <SFML/System/Vector2.hpp>
+#include <oublietteer/Random.hpp>
 
 namespace oublietteer
 {
@@ -30,6 +31,8 @@ namespace oublietteer
             virtual sf::Vector2u getRoomSize() const;
             virtual sf::Color getRoomColor() const;
             sf::Image* getImage() const;
+            bool getIsManual() const;
+            Random* getRandom() const;
         private:
             sf::Vector2u size;
             bool isManual;
