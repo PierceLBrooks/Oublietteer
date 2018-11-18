@@ -5,6 +5,8 @@
 #include <oublietteer/Floor.hpp>
 #include <oublietteer/Room.hpp>
 #include <iostream>
+#include <SFML/Audio/Sound.hpp>
+#include <SFML/Audio/SoundBuffer.hpp>
 #include <SFML/Graphics/Image.hpp>
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/Graphics/Sprite.hpp>
@@ -36,6 +38,8 @@ int main(int argc, char** argv)
     sf::Sprite* sprite = nullptr;
     sf::Texture* texture = nullptr;
     sf::Image* image = nullptr;
+    sf::Sound* sound = nullptr;
+    sf::SoundBuffer* buffer = nullptr;
     sf::RenderWindow* window = new sf::RenderWindow();
     auto resolutions = sf::VideoMode::getFullscreenModes();
     sf::Vector2f center = sf::Vector2f();
@@ -43,6 +47,13 @@ int main(int argc, char** argv)
     window->setFramerateLimit(60);
     center += sf::Vector2f(window->getSize())*0.5f;
     window->setView(sf::View(center, sf::Vector2f(window->getSize())));
+    if (arguments.size() > 1)
+    {
+        buffer = new sf::SoundBuffer();
+        buffer->loadFromFile(arguments[1]);
+        sound = new sf::Sound();
+        sound->setBuffer(*buffer);
+    }
     while (window->isOpen())
     {
         sf::Event event;
@@ -83,6 +94,18 @@ int main(int argc, char** argv)
                     {
                         change = true;
                         std::cout << "Added room " << floor->getRoomCount()-1 << " of floor " << index << " (Manual mode: " << manual << ")" << std::endl;
+                        if (!manual)
+                        {
+                            if (sound != nullptr)
+                            {
+                                if (sound->getStatus() == sf::SoundSource::Playing)
+                                {
+                                    sound->stop();
+                                }
+                                sound->setPitch(static_cast<float>(std::min(100, static_cast<int>(floor->getRoomCount()))));
+                                sound->play();
+                            }
+                        }
                     }
                     else
                     {
@@ -107,6 +130,15 @@ int main(int argc, char** argv)
                             {
                                 if (floor->settleRoom(floor->getRoom(floor->getRoomCount()-1)))
                                 {
+                                    if (sound != nullptr)
+                                    {
+                                        if (sound->getStatus() == sf::SoundSource::Playing)
+                                        {
+                                            sound->stop();
+                                        }
+                                        sound->setPitch(static_cast<float>(std::min(100, static_cast<int>(floor->getRoomCount()))));
+                                        sound->play();
+                                    }
                                     change = true;
                                     std::cout << "Settling room " << floor->getRoomCount()-1 << " of floor " << index << std::endl;
                                 }
@@ -233,6 +265,8 @@ int main(int argc, char** argv)
     delete image;
     delete window;
     delete dungeon;
+    delete sound;
+    delete buffer;
     std::cout << "Bye!" << std::endl;
     arguments.clear();
     return 0;
