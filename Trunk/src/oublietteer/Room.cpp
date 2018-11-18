@@ -12,8 +12,8 @@ oublietteer::Room::Room(Floor* owner, unsigned int index, const sf::Vector2u& si
     size(size)
 {
     std::cout << "ROOMING" << this << std::endl;
-    this->position.x = static_cast<int>(cosf(position)*static_cast<float>(size.x)*0.5f);
-    this->position.y = static_cast<int>(sinf(position)*static_cast<float>(size.y)*0.5f);
+    this->position.x = static_cast<int>(cosf(position)*static_cast<float>(owner->getSize().x)*0.5f);
+    this->position.y = static_cast<int>(sinf(position)*static_cast<float>(owner->getSize().y)*0.5f);
 }
 
 oublietteer::Room::~Room()

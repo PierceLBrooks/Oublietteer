@@ -91,3 +91,36 @@ sf::Vector2u oublietteer::Floor::getRoomSize() const
 {
     return sf::Vector2u(sf::Vector2i(4, 4));
 }
+
+sf::Color oublietteer::Floor::getRoomColor() const
+{
+    return sf::Color::Black;
+}
+
+sf::Image* oublietteer::Floor::getImage() const
+{
+    sf::IntRect bounds = getBounds();
+    sf::Image* image = new sf::Image();
+    sf::Vector2u position;
+    Room* room;
+    image->create(size.x, size.y, sf::Color::Transparent);
+    for (unsigned int i = 0; i != rooms.size(); ++i)
+    {
+        room = rooms[i];
+        if ((bounds.contains(room->getPosition())) &&
+            (bounds.contains(room->getPosition()+sf::Vector2i(0, static_cast<int>(room->getSize().y)))) &&
+            (bounds.contains(room->getPosition()+sf::Vector2i(static_cast<int>(room->getSize().x), 0))) &&
+            (bounds.contains(room->getPosition()+sf::Vector2i(room->getSize()))))
+        {
+            for (unsigned int x = 0; x != room->getSize().x; ++x)
+            {
+                for (unsigned int y = 0; y != room->getSize().y; ++y)
+                {
+                    position = sf::Vector2u(x, y)+sf::Vector2u(room->getPosition()+sf::Vector2i(size.x/2, size.y/2));
+                    image->setPixel(position.x, position.y, getRoomColor());
+                }
+            }
+        }
+    }
+    return image;
+}

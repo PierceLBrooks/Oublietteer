@@ -5,6 +5,7 @@
 #define OUBLIETTEER_FLOOR_HPP
 
 #include <vector>
+#include <SFML/Graphics/Image.hpp>
 #include <SFML/Graphics/Rect.hpp>
 #include <SFML/System/Vector2.hpp>
 
@@ -27,6 +28,8 @@ namespace oublietteer
             Room* getRoom(unsigned index) const;
             bool settleRoom(Room* room);
             virtual sf::Vector2u getRoomSize() const;
+            virtual sf::Color getRoomColor() const;
+            sf::Image* getImage() const;
         private:
             sf::Vector2u size;
             bool isManual;
