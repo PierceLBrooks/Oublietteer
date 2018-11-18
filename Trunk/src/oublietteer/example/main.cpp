@@ -102,7 +102,7 @@ int main(int argc, char** argv)
                                 {
                                     sound->stop();
                                 }
-                                sound->setPitch(static_cast<float>(std::min(100, static_cast<int>(floor->getRoomCount()))));
+                                //sound->setPitch(static_cast<float>(std::min(100, static_cast<int>(floor->getRoomCount()))));
                                 sound->play();
                             }
                         }
@@ -136,7 +136,7 @@ int main(int argc, char** argv)
                                         {
                                             sound->stop();
                                         }
-                                        sound->setPitch(static_cast<float>(std::min(100, static_cast<int>(floor->getRoomCount()))));
+                                        //sound->setPitch(static_cast<float>(std::min(100, static_cast<int>(floor->getRoomCount()))));
                                         sound->play();
                                     }
                                     change = true;
