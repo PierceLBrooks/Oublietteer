@@ -4,6 +4,7 @@
 #include <oublietteer/Floor.hpp>
 #include <oublietteer/Room.hpp>
 #include <oublietteer/Oubliette.hpp>
+#include <limits>
 #include <iostream>
 
 oublietteer::Floor::Floor(Oubliette* owner, int identifier) :
@@ -104,8 +105,12 @@ bool oublietteer::Floor::settleRoom(Room* room)
                 {
                     if (room->getBounds().intersects(rooms[i]->getBounds()))
                     {
+                        sf::Vector2u first;
+                        sf::Vector2u last;
                         sf::Vector2i current = room->getPosition();
                         sf::Vector2i difference = previous-current;
+                        bool neighborhood = true;
+                        bool neighbors;
                         if (difference.x != 0)
                         {
                             difference.x /= abs(difference.x);
@@ -121,6 +126,68 @@ bool oublietteer::Floor::settleRoom(Room* room)
                         } while (room->getBounds().intersects(rooms[i]->getBounds()));
                         check = true;
                         intersection = true;
+                        if (neighborhood)
+                        {
+                            neighbors = false;
+                            for (unsigned int j = 0; j != room->getNeighborCount(); ++j)
+                            {
+                                if (std::get<0>(room->getNeighbor(j)) == rooms[i])
+                                {
+                                    neighbors = true;
+                                    break;
+                                }
+                            }
+                            if (!neighbors)
+                            {
+                                first = getRoomNeighborPosition(room, rooms[i]);
+                                for (unsigned int x = 0; x <= 1; ++x)
+                                {
+                                    for (unsigned int y = 0; y <= 1; ++y)
+                                    {
+                                        if (first == sf::Vector2u(x*(room->getSize().x-1), y*(room->getSize().y-1)))
+                                        {
+                                            neighborhood = false;
+                                            break;
+                                        }
+                                    }
+                                }
+                                if (neighborhood)
+                                {
+                                    room->setNeighbor(room->getNeighborCount(), rooms[i], first);
+                                }
+                            }
+                        }
+                        if (neighborhood)
+                        {
+                            neighbors = false;
+                            for (unsigned int j = 0; j != rooms[i]->getNeighborCount(); ++j)
+                            {
+                                if (std::get<0>(rooms[i]->getNeighbor(j)) == room)
+                                {
+                                    neighbors = true;
+                                    break;
+                                }
+                            }
+                            if (!neighbors)
+                            {
+                                last = getRoomNeighborPosition(rooms[i], room);
+                                for (unsigned int x = 0; x <= 1; ++x)
+                                {
+                                    for (unsigned int y = 0; y <= 1; ++y)
+                                    {
+                                        if (last == sf::Vector2u(x*(rooms[i]->getSize().x-1), y*(rooms[i]->getSize().y-1)))
+                                        {
+                                            neighborhood = false;
+                                            break;
+                                        }
+                                    }
+                                }
+                                if (neighborhood)
+                                {
+                                    rooms[i]->setNeighbor(rooms[i]->getNeighborCount(), room, last);
+                                }
+                            }
+                        }
                         break;
                     }
                 }
@@ -139,6 +206,7 @@ bool oublietteer::Floor::settleRoom(Room* room)
             isManual = false;
             return false;
         }
+        room->finish();
         return true;
     }
     isManual = false;
@@ -250,6 +318,19 @@ sf::Image* oublietteer::Floor::getImage() const
             }
         }
     }
+    color = sf::Color(static_cast<sf::Uint8>((static_cast<int>(color.r)+static_cast<int>(getRoomColor().r))/2),
+                      static_cast<sf::Uint8>((static_cast<int>(color.g)+static_cast<int>(getRoomColor().g))/2),
+                      static_cast<sf::Uint8>((static_cast<int>(color.b)+static_cast<int>(getRoomColor().b))/2),
+                      color.a);
+    for (unsigned int i = 0; i != rooms.size(); ++i)
+    {
+        room = rooms[i];
+        for (unsigned int j = 0; j != room->getNeighborCount(); ++j)
+        {
+            position = std::get<1>(room->getNeighbor(j))+sf::Vector2u(room->getPosition()+sf::Vector2i(sf::Vector2u(size.x/2, size.y/2)));
+            image->setPixel(position.x, position.y, color);
+        }
+    }
     return image;
 }
 
@@ -261,4 +342,128 @@ bool oublietteer::Floor::getIsManual() const
 oublietteer::Random* oublietteer::Floor::getRandom() const
 {
     return owner->getRandom();
+}
+
+float oublietteer::Floor::getMagnitude(const sf::Vector2f& target) const
+{
+    return sqrtf(powf(target.x, 2.0f)+powf(target.y, 2.0f));
+}
+
+float oublietteer::Floor::getDistance(const sf::Vector2f& first, const sf::Vector2f& last) const
+{
+    return sqrtf(powf(first.x-last.x, 2.0f)+powf(first.y-last.y, 2.0f));
+}
+
+sf::Vector2u oublietteer::Floor::getRoomNeighborPosition(Room* first, Room* last) const
+{
+    bool neighbor;
+    sf::Vector2i position;
+    sf::Vector2f distance;
+    sf::Vector2f firstPosition;
+    sf::Vector2f lastPosition;
+    sf::IntRect firstBounds = first->getBounds();
+    sf::IntRect lastBounds = last->getBounds();
+    //distance.y = std::numeric_limits<float>::infinity();
+    for (int x0 = firstBounds.left; x0 != firstBounds.left+firstBounds.width; ++x0)
+    {
+        for (int y0 = firstBounds.top; y0 != firstBounds.top+firstBounds.height; ++y0)
+        {
+            for (int x1 = lastBounds.left; x1 != lastBounds.left+lastBounds.width; ++x1)
+            {
+                for (int y1 = lastBounds.top; y1 != lastBounds.top+lastBounds.height; ++y1)
+                {
+                    firstPosition = sf::Vector2f(sf::Vector2i(x0, y0));
+                    lastPosition = sf::Vector2f(sf::Vector2i(x1, y1));
+                    distance.x = getDistance(firstPosition, first->getCenter());
+                    distance.x += getDistance(lastPosition, last->getCenter());
+                    distance.x += 1.0f/powf(getDistance(firstPosition, lastPosition)/powf(getMagnitude(sf::Vector2f(first->getSize()))+getMagnitude(sf::Vector2f(last->getSize())), 2.0f), 2.0f);
+                    if (distance.x > distance.y)
+                    {
+                        position = sf::Vector2i(x0, y0);
+                        distance.y = distance.x;
+                    }
+                }
+            }
+        }
+    }
+    for (int x = firstBounds.left; x <= firstBounds.left+firstBounds.width; x += firstBounds.width-1)
+    {
+        for (int y = firstBounds.top; y <= firstBounds.top+firstBounds.height; y += firstBounds.height-1)
+        {
+            for (int i = -1; i <= 1; ++i)
+            {
+                for (int j = -1; j <= 1; ++j)
+                {
+                    if ((i%2 == 0) == (j%2 == 0))
+                    {
+                        continue;
+                    }
+                    if ((!lastBounds.contains(position+sf::Vector2i(i, j))) && (firstBounds.contains(position+sf::Vector2i(i, j))))
+                    {
+                        for (int k = -1; k <= 1; ++k)
+                        {
+                            for (int l = -1; l <= 1; ++l)
+                            {
+                                if ((k%2 == 0) == (l%2 == 0))
+                                {
+                                    continue;
+                                }
+                                if ((lastBounds.contains(position+sf::Vector2i(i, j)+sf::Vector2i(k, l))) && (!firstBounds.contains(position+sf::Vector2i(i, j)+sf::Vector2i(k, l))))
+                                {
+                                    return sf::Vector2u((position+sf::Vector2i(i, j))-sf::Vector2i(firstBounds.left, firstBounds.top));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    for (int x = lastBounds.left; x <= lastBounds.left+lastBounds.width; x += lastBounds.width-1)
+    {
+        for (int y = lastBounds.top; y <= lastBounds.top+lastBounds.height; y += lastBounds.height-1)
+        {
+            for (int i = -1; i <= 1; ++i)
+            {
+                for (int j = -1; j <= 1; ++j)
+                {
+                    if ((i%2 == 0) == (j%2 == 0))
+                    {
+                        continue;
+                    }
+                    if (position+sf::Vector2i(i, j) == sf::Vector2i(x, y))
+                    {
+                        for (int k = -1; k <= 1; ++k)
+                        {
+                            for (int l = -1; l <= 1; ++l)
+                            {
+                                if ((k%2 == 0) == (l%2 == 0))
+                                {
+                                    continue;
+                                }
+                                if ((!lastBounds.contains(position+sf::Vector2i(k, l))) && (firstBounds.contains(position+sf::Vector2i(k, l))))
+                                {
+                                    for (int m = -1; m <= 1; ++m)
+                                    {
+                                        for (int n = -1; n <= 1; ++n)
+                                        {
+                                            if ((m%2 == 0) == (n%2 == 0))
+                                            {
+                                                continue;
+                                            }
+                                            if ((lastBounds.contains(position+sf::Vector2i(k, l)+sf::Vector2i(m, n))) && (!firstBounds.contains(position+sf::Vector2i(k, l)+sf::Vector2i(m, n))))
+                                            {
+                                                return sf::Vector2u((position+sf::Vector2i(k, l))-sf::Vector2i(firstBounds.left, firstBounds.top));
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return sf::Vector2u(position-sf::Vector2i(firstBounds.left, firstBounds.top));
 }

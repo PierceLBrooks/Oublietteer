@@ -17,6 +17,17 @@
 
 typedef oublietteer::Oubliette Dungeon;
 
+void report(oublietteer::Room* room)
+{
+    for (unsigned int i = 0; i != room->getNeighborCount(); ++i)
+    {
+        std::pair<oublietteer::Room*, sf::Vector2u> neighbor = room->getNeighbor(i);
+        oublietteer::Room* other = std::get<0>(neighbor);
+        sf::Vector2u position = std::get<1>(neighbor);
+        std::cout << "Room [ " << room->getSize().x << " x " << room->getSize().y << " ] " << room->getIndex() << " @ " << i << " -( " << position.x << " , " << position.y << " )-> " << other->getIndex() << std::endl;
+    }
+}
+
 int main(int argc, char** argv)
 {
     std::vector<std::string> arguments;
@@ -92,6 +103,7 @@ int main(int argc, char** argv)
                 {
                     if (floor->addRoom(manual))
                     {
+                        report(floor->getRoom(floor->getRoomCount()-1));
                         change = true;
                         std::cout << "Added room " << floor->getRoomCount()-1 << " of floor " << index << " (Manual mode: " << manual << ")" << std::endl;
                         if (!manual)
@@ -130,6 +142,7 @@ int main(int argc, char** argv)
                             {
                                 if (floor->settleRoom(floor->getRoom(floor->getRoomCount()-1)))
                                 {
+                                    report(floor->getRoom(floor->getRoomCount()-1));
                                     if (sound != nullptr)
                                     {
                                         if (sound->getStatus() == sf::SoundSource::Playing)

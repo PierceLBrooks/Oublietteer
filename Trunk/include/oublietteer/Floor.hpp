@@ -34,6 +34,9 @@ namespace oublietteer
             bool getIsManual() const;
             Random* getRandom() const;
         private:
+            float getMagnitude(const sf::Vector2f& target) const;
+            float getDistance(const sf::Vector2f& first, const sf::Vector2f& last) const;
+            sf::Vector2u getRoomNeighborPosition(Room* first, Room* last) const;
             sf::Vector2u size;
             bool isManual;
             Oubliette* owner;
