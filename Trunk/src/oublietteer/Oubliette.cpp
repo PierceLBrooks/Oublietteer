@@ -5,7 +5,7 @@
 #include <oublietteer/Floor.hpp>
 #include <iostream>
 
-oublietteer::Oubliette::Oubliette(const sf::Vector2u& size, unsigned int seed) :
+oublietteer::Oubliette::Oubliette(const oublietteer::Vector2u& size, unsigned int seed) :
     size(size),
     random(new Random(seed))
 {
@@ -44,14 +44,14 @@ oublietteer::Floor* oublietteer::Oubliette::getFloor(int identifier) const
     return nullptr;
 }
 
-const sf::Vector2u& oublietteer::Oubliette::getSize() const
+const oublietteer::Vector2u& oublietteer::Oubliette::getSize() const
 {
     return size;
 }
 
-sf::IntRect oublietteer::Oubliette::getBounds() const
+oublietteer::Bounds<int> oublietteer::Oubliette::getBounds() const
 {
-    return sf::IntRect(-static_cast<int>(size.x/2), -static_cast<int>(size.y/2), static_cast<int>(size.x), static_cast<int>(size.y));
+    return oublietteer::Bounds<int>(-static_cast<int>(size.x/2), -static_cast<int>(size.y/2), static_cast<int>(size.x), static_cast<int>(size.y));
 }
 
 oublietteer::Random* oublietteer::Oubliette::getRandom() const

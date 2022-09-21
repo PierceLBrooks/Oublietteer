@@ -6,7 +6,7 @@
 #include <cmath>
 #include <iostream>
 
-oublietteer::Room::Room(Floor* owner, unsigned int index, const sf::Vector2u& size, float direction) :
+oublietteer::Room::Room(Floor* owner, unsigned int index, const oublietteer::Vector2u& size, float direction) :
     owner(owner),
     index(index),
     size(size)
@@ -33,29 +33,29 @@ unsigned int oublietteer::Room::getIndex() const
     return index;
 }
 
-const sf::Vector2u& oublietteer::Room::getSize() const
+const oublietteer::Vector2u& oublietteer::Room::getSize() const
 {
     return size;
 }
 
-const sf::Vector2i& oublietteer::Room::getPosition() const
+const oublietteer::Vector2i& oublietteer::Room::getPosition() const
 {
     return position;
 }
 
-sf::Vector2f oublietteer::Room::getCenter() const
+oublietteer::Vector2f oublietteer::Room::getCenter() const
 {
-    return sf::Vector2f(position)+(sf::Vector2f(size)*0.5f);
+    return oublietteer::Vector2f(position)+(oublietteer::Vector2f(size)*0.5f);
 }
 
-sf::IntRect oublietteer::Room::getBounds() const
+oublietteer::Bounds<int> oublietteer::Room::getBounds() const
 {
-    return sf::IntRect(position.x, position.y, static_cast<int>(size.x), static_cast<int>(size.y));
+    return oublietteer::Bounds<int>(position.x, position.y, static_cast<int>(size.x), static_cast<int>(size.y));
 }
 
 bool oublietteer::Room::settle()
 {
-    sf::Vector2f direction = sf::Vector2f()-getCenter();
+    oublietteer::Vector2f direction = oublietteer::Vector2f()-getCenter();
     direction *= 1.0f/sqrtf((direction.x*direction.x)+(direction.y*direction.y));
     if ((direction.x*this->direction.x)+(direction.y*this->direction.y) >= 0.0f)
     {
@@ -63,7 +63,7 @@ bool oublietteer::Room::settle()
     }
     direction.x *= static_cast<float>(size.x);
     direction.y *= static_cast<float>(size.y);
-    position += sf::Vector2i(direction);
+    position += oublietteer::Vector2i(direction);
     return true;
 }
 
@@ -76,9 +76,9 @@ void oublietteer::Room::finish()
         check = true;
         for (unsigned int i = 0; i != neighbors.size(); ++i)
         {
-            std::pair<Room*, sf::Vector2u> neighbor = neighbors[i];
+            std::pair<Room*, oublietteer::Vector2u> neighbor = neighbors[i];
             Room* room = std::get<0>(neighbor);
-            sf::Vector2i position = sf::Vector2i(std::get<1>(neighbor));
+            oublietteer::Vector2i position = oublietteer::Vector2i(std::get<1>(neighbor));
             if (room == nullptr)
             {
                 neighbors.erase(neighbors.begin()+i);
@@ -96,7 +96,7 @@ void oublietteer::Room::finish()
                         {
                             continue;
                         }
-                        if (room->getBounds().contains(position+sf::Vector2i(j, k)))
+                        if (room->getBounds().contains(position+oublietteer::Vector2i(j, k)))
                         {
                             neighborhood = true;
                             break;
@@ -143,10 +143,10 @@ unsigned int oublietteer::Room::getNeighborCount() const
     return neighbors.size();
 }
 
-std::pair<oublietteer::Room*, sf::Vector2u> oublietteer::Room::getNeighbor(unsigned int index) const
+std::pair<oublietteer::Room*, oublietteer::Vector2u> oublietteer::Room::getNeighbor(unsigned int index) const
 {
     unsigned int counter = 0;
-    for (std::vector<std::pair<Room*, sf::Vector2u>>::const_iterator iter = neighbors.begin(); iter != neighbors.end(); ++iter)
+    for (std::vector<std::pair<Room*, oublietteer::Vector2u>>::const_iterator iter = neighbors.begin(); iter != neighbors.end(); ++iter)
     {
         if (counter == index)
         {
@@ -154,19 +154,19 @@ std::pair<oublietteer::Room*, sf::Vector2u> oublietteer::Room::getNeighbor(unsig
         }
         ++counter;
     }
-    return std::pair<Room*, sf::Vector2u>(nullptr, sf::Vector2u());
+    return std::pair<Room*, oublietteer::Vector2u>(nullptr, oublietteer::Vector2u());
 }
 
-void oublietteer::Room::setPosition(const sf::Vector2i& position)
+void oublietteer::Room::setPosition(const oublietteer::Vector2i& position)
 {
     this->position = position;
 }
 
-void oublietteer::Room::setNeighbor(unsigned int index, Room* room, const sf::Vector2u& position)
+void oublietteer::Room::setNeighbor(unsigned int index, Room* room, const oublietteer::Vector2u& position)
 {
     while (neighbors.size() <= index)
     {
-        neighbors.push_back(std::pair<Room*, sf::Vector2u>(nullptr, sf::Vector2u()));
+        neighbors.push_back(std::pair<Room*, oublietteer::Vector2u>(nullptr, oublietteer::Vector2u()));
     }
     std::get<0>(neighbors[index]) = room;
     std::get<1>(neighbors[index]) = position;

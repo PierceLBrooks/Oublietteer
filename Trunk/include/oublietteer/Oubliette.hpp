@@ -5,8 +5,8 @@
 #define OUBLIETTEER_OUBLIETTE_HPP
 
 #include <map>
-#include <SFML/Graphics/Rect.hpp>
-#include <SFML/System/Vector2.hpp>
+#include <oublietteer/Bounds.hpp>
+#include <oublietteer/Vector2.hpp>
 #include <oublietteer/Random.hpp>
 
 namespace oublietteer
@@ -16,16 +16,16 @@ namespace oublietteer
     class Oubliette
     {
         public:
-            Oubliette(const sf::Vector2u& size, unsigned int seed = 0);
+            Oubliette(const Vector2u& size, unsigned int seed = 0);
             virtual ~Oubliette();
             bool createFloor(int identifier);
             Floor* getFloor(int identifier) const;
-            const sf::Vector2u& getSize() const;
-            sf::IntRect getBounds() const;
+            const Vector2u& getSize() const;
+            Bounds<int> getBounds() const;
             Random* getRandom() const;
         private:
             Random* random;
-            sf::Vector2u size;
+            Vector2u size;
             std::map<int, Floor*> floors;
     };
 }
