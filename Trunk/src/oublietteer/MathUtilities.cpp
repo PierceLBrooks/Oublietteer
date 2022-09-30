@@ -3,6 +3,7 @@
 
 #include <oublietteer/MathUtilities.hpp>
 #include <algorithm>
+#include <limits>
 
 const float oublietteer::util::SQRT_TWO = sqrtf(2.0f);
 

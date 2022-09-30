@@ -3,12 +3,12 @@
 #include_directories(${PROJECT_SOURCE_DIR}/extlibs/SFML/include)
 #link_libraries(sfml-system-2 sfml-window-2 sfml-graphics-2 sfml-audio-2 sfml-network-2)
 
-set(INC ${PROJECT_SOURCE_DIR}/include/oublietteer)
-set(SRC ${PROJECT_SOURCE_DIR}/src/oublietteer)
-set(EXAMPLE_INC ${PROJECT_SOURCE_DIR}/include/oublietteer/example)
-set(EXAMPLE_SRC ${PROJECT_SOURCE_DIR}/src/oublietteer/example)
+set(INC ${PROJECT_SOURCE_DIR}/Trunk/include/oublietteer)
+set(SRC ${PROJECT_SOURCE_DIR}/Trunk/src/oublietteer)
+set(EXAMPLE_INC ${PROJECT_SOURCE_DIR}/Trunk/include/oublietteer/example)
+set(EXAMPLE_SRC ${PROJECT_SOURCE_DIR}/Trunk/src/oublietteer/example)
 
-include_directories(${PROJECT_SOURCE_DIR}/include)
+include_directories(${PROJECT_SOURCE_DIR}/Trunk/include)
 
 set(PROJECT_FILES
 	${SRC}/Oubliette.cpp
