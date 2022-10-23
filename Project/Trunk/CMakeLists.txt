@@ -15,4 +15,5 @@ endmacro()
 
 set_option(CMAKE_BUILD_TYPE Release STRING "Choose the type of build (Debug or Release)")
 
-add_subdirectory(Trunk/src)
+add_subdirectory(src)
+
