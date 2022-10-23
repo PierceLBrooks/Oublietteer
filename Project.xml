@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<buildster directory="../build" distribution="../Distribution">
+<buildster directory="build" distribution="../Distribution">
   <project directory="../Project">
     <dependencies>
       <dependency>
@@ -55,7 +55,7 @@
     </dependencies>
     <targets>
       <target type="library">
-        <label>Trunk</label>
+        <label>oublietteer</label>
         <generator>
           <switch id="BUILDSTER_OS">
             <case check="Windows">MinGW Makefiles</case>
@@ -68,7 +68,7 @@
         <links></links>
         <imports></imports>
       </target>
-      <target type="library">
+      <target type="executable">
         <label>Example</label>
         <generator>
           <switch id="BUILDSTER_OS">
@@ -80,7 +80,7 @@
         </generator>
         <definitions></definitions>
         <links>
-          <link>*ublietteer*</link>
+          <link>*oublietteer*</link>
           <link>*sfml-graphics*</link>
           <link>*sfml-window*</link>
           <link>*sfml-audio*</link>
@@ -88,7 +88,7 @@
           <link>*sfml-system*</link>
         </links>
         <imports>
-          <import>Trunk</import>
+          <import>oublieteer</import>
           <import>sfml</import>
         </imports>
       </target>
