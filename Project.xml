@@ -67,6 +67,27 @@
         <definitions></definitions>
         <links></links>
         <imports></imports>
+        <exports>
+          <export type="all">
+            <key>OUBLIETTEER_PATH</key>
+            <value><install></install></value>
+          </export>
+          <export type="headers">
+            <key>OUBLIETTEER_INCLUDE_PATH</key>
+            <value><install></install>/include</value>
+          </export>
+          <export type="libraries">
+            <key>OUBLIETTEER_LIBRARIES_PATH</key>
+            <value>
+              <switch id="BUILDSTER_OS">
+                <case check="Windows"><install></install>/bin</case>
+                <case check="Linux"><install></install>/lib</case>
+                <case check="Darwin"><install></install>/lib</case>
+                <default><quit></quit></default>
+              </switch>
+            </value>
+          </export>
+        </exports>
       </target>
       <target type="executable">
         <label>Example</label>
@@ -88,7 +109,7 @@
           <link>*sfml-system*</link>
         </links>
         <imports>
-          <import>oublieteer</import>
+          <import>oublietteer</import>
           <import>sfml</import>
         </imports>
       </target>

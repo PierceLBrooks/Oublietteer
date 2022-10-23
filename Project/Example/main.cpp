@@ -21,9 +21,9 @@ void report(oublietteer::Room* room)
 {
     for (unsigned int i = 0; i != room->getNeighborCount(); ++i)
     {
-        std::pair<oublietteer::Room*, sf::Vector2u> neighbor = room->getNeighbor(i);
+        std::pair<oublietteer::Room*, oublietteer::Vector2u> neighbor = room->getNeighbor(i);
         oublietteer::Room* other = std::get<0>(neighbor);
-        sf::Vector2u position = std::get<1>(neighbor);
+        oublietteer::Vector2u position = std::get<1>(neighbor);
         std::cout << "Room [ " << room->getSize().x << " x " << room->getSize().y << " ] " << room->getIndex() << " @ " << i << " -( " << position.x << " , " << position.y << " )-> " << other->getIndex() << std::endl;
     }
 }
@@ -89,7 +89,7 @@ int main(int argc, char** argv)
         {
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
             {
-                dungeon = new Dungeon(sf::Vector2u(window->getSize().y/2, window->getSize().y/2));
+                dungeon = new Dungeon(oublietteer::Vector2u(window->getSize().y/2, window->getSize().y/2));
                 change = true;
                 std::cout << "Welcome to the dungeon" << std::endl;
             }
@@ -184,18 +184,38 @@ int main(int argc, char** argv)
                             oublietteer::Floor* floor = dungeon->getFloor(index);
                             if (floor != nullptr)
                             {
+                                oublietteer::Bitmap* bitmap = floor->getImage();
                                 change = false;
                                 delete sprite;
                                 delete texture;
                                 delete image;
-                                image = floor->getImage();
-                                texture = new sf::Texture();
-                                texture->loadFromImage(*image);
-                                sprite = new sf::Sprite();
-                                sprite->setTexture(*texture);
-                                sprite->setOrigin(sf::Vector2f(texture->getSize())*0.5f);
-                                sprite->setPosition(sf::Vector2f(window->getSize())*0.5f);
-                                std::cout << "Got image for floor " << index << std::endl;
+                                if (bitmap != nullptr)
+                                {
+                                    image = new sf::Image();
+                                    image->create(bitmap->getSize().x, bitmap->getSize().y);
+                                    for (unsigned int x = 0; x != bitmap->getSize().x; ++x)
+                                    {
+                                        for (unsigned int y = 0; y != bitmap->getSize().y; ++y)
+                                        {
+                                            oublietteer::Pixel pixel = bitmap->getPixel(x, y);
+                                            image->setPixel(x, y, sf::Color(pixel.getRed(), pixel.getGreen(), pixel.getBlue()));
+                                        }
+                                    }
+                                    texture = new sf::Texture();
+                                    texture->loadFromImage(*image);
+                                    sprite = new sf::Sprite();
+                                    sprite->setTexture(*texture);
+                                    sprite->setOrigin(sf::Vector2f(texture->getSize())*0.5f);
+                                    sprite->setPosition(sf::Vector2f(window->getSize())*0.5f);
+                                    std::cout << "Got image for floor " << index << std::endl;
+                                }
+                                else
+                                {
+                                    std::cout << "Got no image for floor " << index << std::endl;
+                                    image = nullptr;
+                                    texture = nullptr;
+                                    sprite = nullptr;
+                                }
                             }
                             else
                             {

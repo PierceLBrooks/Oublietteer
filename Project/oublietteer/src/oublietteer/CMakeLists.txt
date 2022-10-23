@@ -3,27 +3,34 @@ set(SRC ${PROJECT_SOURCE_DIR}/src/oublietteer)
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
-set(PROJECT_FILES
+set(SRC_FILES
 	${SRC}/Oubliette.cpp
-	${INC}/Oubliette.hpp
 	${SRC}/Room.cpp
-	${INC}/Room.hpp
 	${SRC}/Floor.cpp
-	${INC}/Floor.hpp
 	${SRC}/Random.cpp
-	${INC}/Random.hpp
 	${SRC}/Bitmap.cpp
-	${INC}/Bitmap.hpp
 	${SRC}/Pixel.cpp
-	${INC}/Pixel.hpp
 	${SRC}/MathUtilities.cpp
+)
+
+set(INC_FILES
+	${INC}/Oubliette.hpp
+	${INC}/Room.hpp
+	${INC}/Floor.hpp
+	${INC}/Random.hpp
+	${INC}/Bitmap.hpp
+	${INC}/Pixel.hpp
 	${INC}/MathUtilities.hpp
 	${INC}/Vector2.hpp
 	${INC}/Bounds.hpp
 )
 
+set(PROJECT_FILES ${SRC_FILES} ${INC_FILES})
+
 add_library(oublietteer ${PROJECT_FILES})
-link_libraries(oublietteer)
+
+install(TARGETS oublietteer)
+install(FILES ${INC_FILES} DESTINATION ${CMAKE_INSTALL_PREFIX}/include/oublietteer)
 
 set_property(TARGET oublietteer PROPERTY CXX_STANDARD 14)
 set_property(TARGET oublietteer PROPERTY CXX_STANDARD_REQUIRED ON)
