@@ -3,6 +3,56 @@
   <project directory="../Project">
     <dependencies>
       <dependency>
+        <label>netlink</label>
+        <subpath>build</subpath>
+        <remote>
+          <url>https://github.com/Lichtso/netLink.git</url>
+          <git_repo>
+            <branch>master</branch>
+            <credentials>
+              <username>username</username>
+              <password>password</password>
+            </credentials>
+          </git_repo>
+        </remote>
+        <build>
+          <arguments></arguments>
+          <cmake>
+            <generator>
+              <switch id="BUILDSTER_OS">
+                <case check="Windows">MinGW Makefiles</case>
+                <case check="Linux">Unix Makefiles</case>
+                <case check="Darwin">Xcode</case>
+                <default><quit></quit></default>
+              </switch>
+            </generator>
+            <source>..</source>
+          </cmake>
+        </build>
+        <exports>
+          <export type="all">
+            <key>NETLINK_PATH</key>
+            <value><install></install></value>
+          </export>
+          <export type="headers">
+            <key>NETLINK_INCLUDE_PATH</key>
+            <value><install></install>/include</value>
+          </export>
+          <export type="libraries">
+            <key>NETLINK_LIBRARIES_PATH</key>
+            <value>
+              <switch id="BUILDSTER_OS">
+                <case check="Windows"><install></install>/bin</case>
+                <case check="Linux"><install></install>/lib</case>
+                <case check="Darwin"><install></install>/lib</case>
+                <default><quit></quit></default>
+              </switch>
+            </value>
+          </export>
+        </exports>
+        <imports></imports>
+      </dependency>
+      <dependency>
         <label>sfml</label>
         <subpath>build</subpath>
         <remote>
@@ -65,8 +115,12 @@
           </switch>
         </generator>
         <definitions></definitions>
-        <links></links>
-        <imports></imports>
+        <links>
+          <link>*netLink*</link>
+        </links>
+        <imports>
+          <import>netlink</import>
+        </imports>
         <exports>
           <export type="all">
             <key>OUBLIETTEER_PATH</key>
